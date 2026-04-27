@@ -1,19 +1,31 @@
-export default function ProductoCard({ producto, onDelete }) {
+import { useContext } from "react";
+import { ProductosContext } from "../context/ProductosContext";
+import axios from "axios";
+
+function ProductoCard({ producto }) {
+  const { dispatch } = useContext(ProductosContext);
+
+  const eliminarMe = async () => {
+    if (window.confirm(`¿Borrar  ${producto.nombre}? `))
+    try {
+      await axios.delete(
+        `http://localhost:3001/productos/${producto._id}`,
+      );
+
+      dispatch({ type: "DELETE_PRODUCT", payload: producto._id });
+    } catch (error) {
+      console.error("No se pudo borrar");
+    }
+  };
   return (
-    <div className="producto-card">
-      <img 
-        src={producto.imagen} 
-        alt={producto.nombre} 
-        onError={(e) => { e.target.src = 'https://placehold.co/400x400?text=SyntaxTech'; }}
-      />
-      <div className="card-body">
-        <h3>{producto.nombre}</h3>
-        <p className="categoria">{producto.categoria}</p>
-        <p className="precio">${producto.precio}</p>
-        <button className="btn-eliminar" onClick={() => onDelete(producto._id)}>
-          Eliminar
-        </button>
-      </div>
+    <div className="card">
+      <h3> {producto.nombre} </h3>
+      <p>
+        {producto.categoria} - {producto.precio}
+      </p>
+      <button onClick={eliminarMe}> Eliminar </button>
     </div>
   );
 }
+
+export default ProductoCard
